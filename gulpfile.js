@@ -34,16 +34,6 @@ gulp.task('compile-src', [], () => {
     return result;
 });
 
-gulp.task('compile-server', [], () => {
-    let result = gulp
-        .src('src/server.ts')
-        .pipe(sourcemaps.init())
-        .pipe(ts(ts.createProject('src/tsconfig.json')))
-        .pipe(sourcemaps.write('.', {includeContent: false, sourceRoot: '../src'}))
-        .pipe(gulp.dest('dist'));
-    return result;
-});
-
 gulp.task('through', [], () => {
     let result = gulp
         .src('src/index.html')
@@ -66,7 +56,7 @@ gulp.task('browserify', ['compile-src'], () => {
     return result;
 });
 
-gulp.task('build-app', ['compile-server', 'through', 'browserify', 'copy-images']);
+gulp.task('build-app', ['through', 'browserify', 'copy-images']);
 
 gulp.task('watch',[], () => {
     gulp.watch(['src/**/*.{ts,tsx}', 'src/index.html'], () => {

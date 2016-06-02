@@ -6,7 +6,7 @@ After all you need to install NodeJS from https://nodejs.org/.
 
 Then, run in 'web' folder:
 ``` bash
-npm install gulp typescript -g
+npm install gulp -g
 npm install
 ```
 First build
@@ -15,7 +15,7 @@ gulp build-app
 ```
 Run
 ``` bash
-node dist/server
+node server [--bip backendIp|--bp backendPort]
 ```
 Rebuild
 ``` bash
