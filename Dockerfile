@@ -1,13 +1,12 @@
-FROM    centos:centos6
+FROM    node:4.2.6
 
-# Enable Extra Packages for Enterprise Linux (EPEL) for CentOS
-RUN     yum install -y epel-release
-# Install Node.js and npm
-RUN     yum install -y nodejs npm
-RUN     npm install gulp typescript -g
+RUN     npm install gulp -g
 
-COPY . /src/
-RUN cd /src; npm install; gulp build-app
+COPY    . /src/
+RUN     cd /src; npm install; gulp build-app
+
+RUN     node --version
 
 EXPOSE  8080
-CMD ["node", "/src/server.js"]
+
+CMD     ["node", "/src/server.js"]
