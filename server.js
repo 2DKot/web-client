@@ -14,8 +14,8 @@ var config = makeConfig();
 app.use('/config', function(req, res) {
     res.end('var config = ' + JSON.stringify(config) + ';');
 });
-app.listen(8080, function () {
-    console.log('Front-end server is ready! And listen on 8080.');
+app.listen(config.port, function () {
+    console.log('Front-end server is ready! And listen on ' + config.port + '.');
 });
 
 function makeConfig() {
@@ -24,9 +24,11 @@ function makeConfig() {
     //FLAGS
     if(argv.bip)    conf.backend.ip = argv.bip;
     if(argv.bp)     conf.backend.port = argv.bp;
+    if(argv.port)   conf.port = argv.port
     
     //DEFAULTS
     if(!conf.backend.ip) conf.backend.ip = '127.0.0.1'
     if(!conf.backend.port) conf.backend.port = '3000'
+    if(!conf.port) conf.port = '8080'
     return conf;
 }
