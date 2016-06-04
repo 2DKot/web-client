@@ -1,9 +1,28 @@
 'use strict';
+var argv = require('minimist')(process.argv.slice(2));
+if(argv.help) {
+    var help = 
+`AI Contester web-client
+Usage:
+  node server [options]
+  
+Options:
+  --backend-ip=ip       set ip of AI_Contester web-server
+  --backend-port=port   set port of AI_Contester web-server
+  --port                set port for web-client
+
+Environment variables:
+  WEB_BACKEND_IP        ip of AI_Contester web-server
+  WEB_BACKEND_PORT      port of AI_Contester web-server
+  WEB_PORT              port for web-client`;
+    console.log(help);
+    return;
+};
+
 var connect = require('connect'), 
     serveStatic = require('serve-static'),
-    fs = require('fs'),
-    argv = require('minimist')(process.argv.slice(2));
-console.log(argv);
+    fs = require('fs');
+    
 require('source-map-support').install();
 var app = connect();
 app.use(serveStatic(__dirname + '/dist/app'));
@@ -19,16 +38,20 @@ app.listen(config.port, function () {
 });
 
 function makeConfig() {
-    var conf = JSON.parse(fs.readFileSync('config.json', 'utf8'));
-    
-    //FLAGS
-    if(argv.bip)    conf.backend.ip = argv.bip;
-    if(argv.bp)     conf.backend.port = argv.bp;
-    if(argv.port)   conf.port = argv.port
-    
-    //DEFAULTS
-    if(!conf.backend.ip) conf.backend.ip = '127.0.0.1'
-    if(!conf.backend.port) conf.backend.port = '3000'
-    if(!conf.port) conf.port = '8080'
+    var file = JSON.parse(fs.readFileSync('config.json', 'utf8'));
+    var conf = {};
+    conf.backend = {};
+    conf.backend.ip = argv["backend-ip"] || 
+                      process.env.WEB_BACKEND_IP ||
+                      file.backend && file.backend.ip ||
+                      '127.0.0.1';
+    conf.backend.port = argv["backend-port"] ||
+                        process.env.WEB_BACKEND_PORT ||
+                        file.backend && file.backend.port ||
+                        '3000';
+    conf.port = argv["port"] ||
+                process.env.WEB_PORT ||
+                file.port ||
+                '8080';
     return conf;
 }

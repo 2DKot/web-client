@@ -15,7 +15,7 @@ gulp build-app
 ```
 Run
 ``` bash
-node server [--bip backendIp|--bp backendPort]
+node server
 ```
 Rebuild
 ``` bash
@@ -23,5 +23,6 @@ gulp clean
 gulp build-app
 ```
 #Configuration
-You can change ip or port of backend server in config/config.js file.
-To see these changes you only need to refresh page in your browser.
+You can set ip and port of backend server and other options in config.json file.
+Also you can do it by command-line options or environment variables.
+Type ```node server --help``` to see more information.
