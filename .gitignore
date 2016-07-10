@@ -2,6 +2,7 @@
 node_modules
 
 static/bundle.js*
+static/config.js
 
 .directory
 

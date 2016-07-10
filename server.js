@@ -20,37 +20,19 @@ Environment variables:
 };
 
 var connect = require('connect'), 
-    serveStatic = require('serve-static'),
-    fs = require('fs');
+    serveStatic = require('serve-static');
     
 var app = connect();
 app.use(serveStatic(__dirname + '/static/'));
 app.use('/lib/react', serveStatic(__dirname + '/node_modules/react/dist/'));
 app.use('/lib/react', serveStatic(__dirname + '/node_modules/react-dom/dist/'));
 
-var config = makeConfig();
-app.use('/config', function(req, res) {
+var config = require('./config.js')(argv);
+
+app.use('/config.js', function(req, res) {
     res.end('var config = ' + JSON.stringify(config) + ';');
 });
+
 app.listen(config.port, function () {
     console.log('Front-end server is ready! And listen on ' + config.port + '.');
 });
-
-function makeConfig() {
-    var file = JSON.parse(fs.readFileSync('config.json', 'utf8'));
-    var conf = {};
-    conf.backend = {};
-    conf.backend.ip = argv["backend-ip"] || 
-                      process.env.WEB_BACKEND_IP ||
-                      file.backend && file.backend.ip ||
-                      '127.0.0.1';
-    conf.backend.port = argv["backend-port"] ||
-                        process.env.WEB_BACKEND_PORT ||
-                        file.backend && file.backend.port ||
-                        '3000';
-    conf.port = argv["port"] ||
-                process.env.WEB_PORT ||
-                file.port ||
-                '8080';
-    return conf;
-}

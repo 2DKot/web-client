@@ -1,5 +1,4 @@
-/// <reference path="../../typings/tsd.d.ts"/>
-/// <reference path="./config.d.ts"/>
+/// <reference path="../typings/index.d.ts"/>
 
 "use strict";
 import * as React from 'react';

@@ -1,7 +1,4 @@
-/// <reference path="../../typings/react/react.d.ts"/>
-/// <reference path="../../typings/react/react-dom.d.ts"/>
-/// <reference path="../../typings/whatwg-fetch/whatwg-fetch.d.ts"/>
-/// <reference path="./config.d.ts"/>
+/// <reference path="../typings/index.d.ts"/>
 
 "use strict";
 import * as React from 'react';
@@ -89,7 +86,7 @@ export class Login extends React.Component<ILoginProps, ILoginState> {
     render() {
         return (
             <div style = {{border: "solid"}}>
-                <h3>Вход</h3>
+                <h3>Вход в систему</h3>
                 username:<input onChange={e => this.handleName(e)}/>
                 password:<input onChange={e => this.handlePassword(e)}/>
                 <button onClick={e=>this.authorize()}>login</button>

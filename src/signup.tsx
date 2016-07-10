@@ -1,7 +1,4 @@
-/// <reference path="../../typings/react/react.d.ts"/>
-/// <reference path="../../typings/react/react-dom.d.ts"/>
-/// <reference path="../../typings/whatwg-fetch/whatwg-fetch.d.ts"/>
-/// <reference path="./config.d.ts"/>
+/// <reference path="../typings/index.d.ts"/>
 
 "use strict";
 import * as React from 'react';

@@ -1,3 +1,4 @@
+/// <reference path="../typings/index.d.ts"/>
 import {IUser} from './IUser';
 
 export interface IStrategy {

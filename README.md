@@ -16,6 +16,13 @@ npm run build
 ``` bash
 npm start
 ```
+
+## Develop server
+``` bash
+npm run-develop
+```
+And go to 127.0.0.1:8080/webpack-dev-server/ in browser.
+
 #Configuration
 You can set ip and port of backend server and other options in config.json file.
 Also you can do it by command-line options or environment variables.

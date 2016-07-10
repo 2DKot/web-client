@@ -1,7 +1,11 @@
+var path = require('path');
+
 module.exports = {
-    entry: "./src/app.tsx",
+    context: path.join(__dirname, 'src'),
+    entry: "./app.tsx",
     output: {
-        filename: "./static/bundle.js",
+        path: path.join(__dirname, "static"),
+        filename: "bundle.js"
     },
 
     // Enable sourcemaps for debugging webpack's output.
@@ -29,7 +33,7 @@ module.exports = {
     // This is important because it allows us to avoid bundling all of our
     // dependencies, which allows browsers to cache those libraries between builds.
     externals: {
-        "react": "React",
-        "react-dom": "ReactDOM"
+        // "react": "React",
+        // "react-dom": "ReactDOM"
     },
 };

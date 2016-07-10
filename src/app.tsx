@@ -1,13 +1,16 @@
-/// <reference path="../typings/react/react.d.ts"/>
+/// <reference path="../typings/index.d.ts"/>
+/// <reference path="./config.d.ts"/>
 "use strict";
 
 import * as React from 'react';
 import * as ReactDom from 'react-dom';
 import {Hello, Secret} from './test';
-import {Login} from './login'
-import {Signup} from './signup'
-import {SendStrategy} from './sendStrategy'
-import {StrategiesList} from './StrategiesList'
+import {Login} from './login';
+import {Signup} from './signup';
+import {SendStrategy} from './sendStrategy';
+import {StrategiesList} from './StrategiesList';
+
+// import {fetch} from 'fetch';
 
 var endpoint = "http://" + config.backend.ip + ":" + config.backend.port + "/";
 
