@@ -1,8 +1,7 @@
 # Dependency directory
 node_modules
 
-build
-dist
+static/bundle.js*
 
 .directory
 

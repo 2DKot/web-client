@@ -23,12 +23,11 @@ var connect = require('connect'),
     serveStatic = require('serve-static'),
     fs = require('fs');
     
-require('source-map-support').install();
 var app = connect();
-app.use(serveStatic(__dirname + '/dist/app'));
+app.use(serveStatic(__dirname + '/static/'));
 app.use('/lib/react', serveStatic(__dirname + '/node_modules/react/dist/'));
 app.use('/lib/react', serveStatic(__dirname + '/node_modules/react-dom/dist/'));
-app.use('/lib/fetch', serveStatic(__dirname + '/node_modules/whatwg-fetch/'));
+
 var config = makeConfig();
 app.use('/config', function(req, res) {
     res.end('var config = ' + JSON.stringify(config) + ';');

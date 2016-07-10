@@ -2,25 +2,19 @@
 It is a web-client for AI-Contester server.
 
 #Build and run
-After all you need to install NodeJS from https://nodejs.org/.
+First of all you need to install NodeJS and NPM.
 
-Then, run in 'web' folder:
+Then, run in project folder:
 ``` bash
-npm install gulp -g
 npm install
 ```
-First build
+## Build
 ``` bash
-gulp build-app
+npm run build
 ```
-Run
+## Run
 ``` bash
-node server
-```
-Rebuild
-``` bash
-gulp clean
-gulp build-app
+npm start
 ```
 #Configuration
 You can set ip and port of backend server and other options in config.json file.
