@@ -67,22 +67,22 @@ export class Signup extends React.Component<ISignupProps, ISignupState> {
     render() {
         return (
             <div style={{border:"solid"}}>
-                <h3>Регистрация</h3>
+                <h3>Sign up</h3>
                 <input 
                     type="text"
-                    placeholder = "ваш логин"
+                    placeholder = "email"
                     value={this.state.username}
                     onChange={e=>this.handleName(e)}
                 /><br/>
                 <input
                     type="text"
-                    placeholder = "пароль"
+                    placeholder = "password"
                     value={this.state.password}
                     onChange={e=>this.handlePassword(e)}
                 /><br/>
                 <input 
                     type="text"
-                    placeholder="подтверждение пароля"
+                    placeholder="password again"
                     value={this.state.passwordDuplicate}
                     onChange={e=>this.handlePasswordDuplicate(e)}
                 /> {this.state.duplicatePasswordMessage}<br/>

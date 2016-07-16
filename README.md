@@ -19,7 +19,7 @@ npm start
 
 ## Develop server
 ``` bash
-npm run-develop
+npm run develop
 ```
 And go to 127.0.0.1:8080/webpack-dev-server/ in browser.
 

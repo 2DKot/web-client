@@ -86,7 +86,7 @@ export class Login extends React.Component<ILoginProps, ILoginState> {
     render() {
         return (
             <div style = {{border: "solid"}}>
-                <h3>Вход в систему</h3>
+                <h3>Log in</h3>
                 username:<input onChange={e => this.handleName(e)}/>
                 password:<input onChange={e => this.handlePassword(e)}/>
                 <button onClick={e=>this.authorize()}>login</button>
