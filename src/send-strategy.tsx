@@ -2,22 +2,24 @@
 
 "use strict";
 import * as React from 'react';
+import TextField from 'material-ui/TextField'
+import RaisedButton from 'material-ui/RaisedButton'
 
 var endpoint = "http://" + config.backend.ip + ":" + config.backend.port + "/";
 
 export interface ISendStrategyProps {
-    token: string;
 }
 
 export interface ISendStrategyState {
     strategyCode?: string;
     statusMessage?: string;
+    token?: string;
 }
 
 export class SendStrategy extends React.Component<ISendStrategyProps, ISendStrategyState> {
     constructor(props: ISendStrategyProps) {
         super(props);
-        this.state = {};
+        this.state = {token: localStorage.getItem('token')};
     }
 
     handleStrategyCode(e) {
@@ -52,7 +54,7 @@ export class SendStrategy extends React.Component<ISendStrategyProps, ISendStrat
             method: 'post',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + this.props.token
+                'Authorization': 'Bearer ' + this.state.token
             },
             body: JSON.stringify({
                 source: this.state.strategyCode,
@@ -69,18 +71,24 @@ export class SendStrategy extends React.Component<ISendStrategyProps, ISendStrat
     render() {
         return (
             <div>
-                <textarea
-                    placeholder = "Copy your code here, or load file by button below."
+                <TextField
+                    hintText = "Copy your code here, or load file by button below."
                     value={this.state.strategyCode}                 
                     onChange={e=> this.handleStrategyCode(e) }
+                    multiLine={true}
+                    fullWidth={true}
+                    rowsMax={20}
                 /><br/>
                 <input
                     type = "file"               
                     onChange={e=> this.handleFile(e) }
                 /><br/>
-                <button onClick={e=> this.handleSubmit() }>Send</button><br/>
+                <RaisedButton
+                    label='Send'
+                    onClick={e=> this.handleSubmit() }
+                /><br/>
                 {this.state.statusMessage}
-                </div>
+            </div>
         );
     }
 }

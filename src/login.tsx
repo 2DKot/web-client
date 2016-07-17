@@ -2,6 +2,10 @@
 
 "use strict";
 import * as React from 'react';
+import TextField from 'material-ui/TextField'
+import Subheader from 'material-ui/Subheader'
+import Paper from 'material-ui/Paper'
+import RaisedButton from 'material-ui/RaisedButton'
 
 var endpoint = "http://" + config.backend.ip + ":" + config.backend.port + "/";
 
@@ -31,7 +35,7 @@ function base64encode(str) {
 }
 
 export interface ILoginProps {
-    onLogin(accessToken: string):void;
+    onLogin():void;
 }
 
 export interface ILoginState {
@@ -39,7 +43,7 @@ export interface ILoginState {
     password?: string
 }
 
-export class Login extends React.Component<ILoginProps, ILoginState> {
+export default class Login extends React.Component<ILoginProps, ILoginState> {
     constructor(props: ILoginProps) {
         super(props);
         this.state = { username:"", password: "" };
@@ -77,20 +81,49 @@ export class Login extends React.Component<ILoginProps, ILoginState> {
             .then(parseJSON)
             .then(data => {
                 console.log(data);
-                this.props.onLogin(data.access_token);
+                localStorage.setItem("token", data.access_token);
+                this.props.onLogin();
             })
             .catch(ex => {
                 console.log('request failed: ', ex);
             });
     }
+
+    handleKeyDown(e) {
+        if(e.keyCode == 13) {
+            this.authorize();
+        }
+    }
+
     render() {
         return (
-            <div style = {{border: "solid"}}>
-                <h3>Log in</h3>
-                username:<input onChange={e => this.handleName(e)}/>
-                password:<input onChange={e => this.handlePassword(e)}/>
-                <button onClick={e=>this.authorize()}>login</button>
-            </div>
+            <Paper
+                zDepth={2}
+                style={{
+                    display: 'block',
+                    padding: '10px'
+                }}
+            >
+                <TextField 
+                    onChange={e => this.handleName(e)}
+                    value={this.state.username}
+                    hintText="username"
+                    fullWidth={true}
+                    onKeyDown={(e)=>{this.handleKeyDown(e)}}
+                />
+                <TextField 
+                    onChange={e => this.handlePassword(e)}
+                    value={this.state.password}
+                    hintText="password"
+                    type="password"
+                    fullWidth={true}
+                    onKeyDown={(e)=>{this.handleKeyDown(e)}}
+                /><br/>
+                <RaisedButton 
+                    label='login'
+                    onClick={e=>this.authorize()}
+                />
+            </Paper>
         );
     }
 }

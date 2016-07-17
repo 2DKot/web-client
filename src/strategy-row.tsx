@@ -10,7 +10,7 @@ import Popover from 'material-ui/Popover'
 import RaisedButton from 'material-ui/RaisedButton'
 import Dialog from 'material-ui/Dialog'
 import injectTapEventPlugin = require('react-tap-event-plugin');
-import FloatingActionButton from 'material-ui/FloatingActionButton'
+import IconButton from 'material-ui/IconButton'
 import ErrorOutline from 'material-ui/svg-icons/alert/error-outline'
 import Done from 'material-ui/svg-icons/action/done'
 
@@ -60,12 +60,13 @@ export class StrategyRow extends React.Component<IStrategyRowProps, IStrategyRow
                 </TableRowColumn>
                 <TableRowColumn>{this.props.strategy.status === "error" ?
                     <div>
-                        <FloatingActionButton 
-                            onTouchTap={() => this.handleOpenErrorDialog()}
-                            mini={true}
-                        >
-                            <ErrorOutline/>
-                        </FloatingActionButton>
+                        <ErrorOutline
+                            onClick={() => this.handleOpenErrorDialog()}
+                            style={{
+                                cursor: 'pointer',
+                                color: 'darkred'
+                            }}
+                        />
                         <Dialog
                             open={this.state.errorDialogOpened}
                             modal={false}
@@ -78,8 +79,10 @@ export class StrategyRow extends React.Component<IStrategyRowProps, IStrategyRow
                         </Dialog>
                     </div>:
                     this.props.strategy.status == "compiling" ?
-                        "Compilation.." :
-                        <Done/>}
+                        "" :
+                        <Done
+                            color='darkgreen'
+                        />}
                 </TableRowColumn>
                 <TableRowColumn>
                     <a

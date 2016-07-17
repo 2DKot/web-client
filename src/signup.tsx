@@ -2,6 +2,10 @@
 
 "use strict";
 import * as React from 'react';
+import TextField from 'material-ui/TextField'
+import Subheader from 'material-ui/Subheader'
+import Paper from 'material-ui/Paper'
+import RaisedButton from 'material-ui/RaisedButton'
 
 var endpoint = "http://" + config.backend.ip + ":" + config.backend.port + "/";
 
@@ -11,6 +15,7 @@ export interface ISignupProps {
 
 export interface ISignupState {
     username?: string,
+    fullname?: string;
     password?: string,
     passwordDuplicate?: string,
     email?: string,
@@ -18,13 +23,16 @@ export interface ISignupState {
     statusMessage?: string
 }
 
-export class Signup extends React.Component<ISignupProps, ISignupState> {
+export default class Signup extends React.Component<ISignupProps, ISignupState> {
     constructor(props: ISignupProps) {
         super(props);
         this.state = {};
     }
     handleName(e) {
         this.setState({ username: e.target.value });
+    }
+    handleFullname(e) {
+        this.setState({ fullname: e.target.value });
     }
     handlePassword(e) {
         this.setState({ password: e.target.value }, this.matchPasswords);
@@ -66,35 +74,51 @@ export class Signup extends React.Component<ISignupProps, ISignupState> {
     }
     render() {
         return (
-            <div style={{border:"solid"}}>
-                <h3>Sign up</h3>
-                <input 
-                    type="text"
-                    placeholder = "email"
+            <Paper
+                zDepth={2}
+                style={{
+                    display: 'block',
+                    padding: '10px'
+                }}
+            >
+                <TextField 
+                    hintText = "login"
                     value={this.state.username}
                     onChange={e=>this.handleName(e)}
+                    fullWidth={true}
                 /><br/>
-                <input
-                    type="text"
-                    placeholder = "password"
+                <TextField
+                    hintText = "full name"
+                    value={this.state.fullname}
+                    onChange={e=>this.handleFullname(e)}
+                    fullWidth={true}
+                /><br/>
+                <TextField
+                    type="password"
+                    hintText = "password"
                     value={this.state.password}
                     onChange={e=>this.handlePassword(e)}
+                    fullWidth={true}
                 /><br/>
-                <input 
-                    type="text"
-                    placeholder="password again"
+                <TextField
+                    type="password"
+                    hintText="password again"
                     value={this.state.passwordDuplicate}
                     onChange={e=>this.handlePasswordDuplicate(e)}
+                    fullWidth={true}
                 /> {this.state.duplicatePasswordMessage}<br/>
-                <input
-                    type="text"
-                    placeholder="your@mail.com"
+                <TextField
+                    hintText="your@mail.com"
                     value={this.state.email}
                     onChange={e=>this.handleEmail(e)}
+                    fullWidth={true}
                 /><br/>
-                <button onClick={e=>this.handleSubmit()}>Signup</button><br/>
+                <RaisedButton 
+                    label='sign up'
+                    onClick={e=>this.handleSubmit()}
+                />
                 {this.state.statusMessage}
-            </div>
+            </Paper>
         );
     }
 }
