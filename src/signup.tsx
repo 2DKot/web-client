@@ -2,29 +2,38 @@
 
 "use strict";
 import * as React from 'react';
+import TextField from 'material-ui/TextField'
+import Subheader from 'material-ui/Subheader'
+import Paper from 'material-ui/Paper'
+import RaisedButton from 'material-ui/RaisedButton'
 
 var endpoint = "http://" + config.backend.ip + ":" + config.backend.port + "/";
 
 export interface ISignupProps {
-    
+    onSignup()
 }
 
 export interface ISignupState {
     username?: string,
+    fullname?: string;
     password?: string,
     passwordDuplicate?: string,
     email?: string,
-    duplicatePasswordMessage?: string,
-    statusMessage?: string
+    duplicatePasswordError?: boolean,
+    statusMessage?: string,
+    alreadyExists?: string
 }
 
-export class Signup extends React.Component<ISignupProps, ISignupState> {
+export default class Signup extends React.Component<ISignupProps, ISignupState> {
     constructor(props: ISignupProps) {
         super(props);
         this.state = {};
     }
     handleName(e) {
         this.setState({ username: e.target.value });
+    }
+    handleFullname(e) {
+        this.setState({ fullname: e.target.value });
     }
     handlePassword(e) {
         this.setState({ password: e.target.value }, this.matchPasswords);
@@ -34,10 +43,10 @@ export class Signup extends React.Component<ISignupProps, ISignupState> {
     }
     matchPasswords() {
         if(this.state.password !== this.state.passwordDuplicate) {
-            this.setState({duplicatePasswordMessage: "Passwords doesn't match!"});
+            this.setState({duplicatePasswordError: true});
         }
         else {
-            this.setState({duplicatePasswordMessage: "OK!"});
+            this.setState({duplicatePasswordError: false});
         }
     }
     handleEmail(e) {
@@ -55,46 +64,75 @@ export class Signup extends React.Component<ISignupProps, ISignupState> {
             body: JSON.stringify({
                 username: this.state.username,
                 password: this.state.password,
-                email: this.state.email
+                email: this.state.email,
+                fullname: this.state.fullname
             })
         })
-            .then(response => response.json())
-            .then(data => {
-                console.log(data);
-                this.setState({ statusMessage: data.message });
-            });
+        .then(response => {
+            if(response.status === 201) {
+                this.props.onSignup();
+            } else if(response.status === 409) {
+                response.json().then((data) => {
+                    console.log('!!!!')
+                    console.log(data)
+                    this.setState({ alreadyExists: data.alreadyExists })
+                });
+            }
+        })
     }
     render() {
         return (
-            <div style={{border:"solid"}}>
-                <h3>Регистрация</h3>
-                <input 
-                    type="text"
-                    placeholder = "ваш логин"
+            <Paper
+                zDepth={2}
+                style={{
+                    display: 'block',
+                    padding: '10px'
+                }}
+            >
+                <TextField 
+                    hintText = "login"
                     value={this.state.username}
                     onChange={e=>this.handleName(e)}
+                    fullWidth={true}
+                    errorText={this.state.alreadyExists == 'username' ?
+                        'There is already user with that login':null}
                 /><br/>
-                <input
-                    type="text"
-                    placeholder = "пароль"
+                <TextField
+                    hintText = "full name"
+                    value={this.state.fullname}
+                    onChange={e=>this.handleFullname(e)}
+                    fullWidth={true}
+                /><br/>
+                <TextField
+                    type="password"
+                    hintText = "password"
                     value={this.state.password}
                     onChange={e=>this.handlePassword(e)}
+                    fullWidth={true}
                 /><br/>
-                <input 
-                    type="text"
-                    placeholder="подтверждение пароля"
+                <TextField
+                    type="password"
+                    hintText="password again"
                     value={this.state.passwordDuplicate}
                     onChange={e=>this.handlePasswordDuplicate(e)}
-                /> {this.state.duplicatePasswordMessage}<br/>
-                <input
-                    type="text"
-                    placeholder="your@mail.com"
+                    fullWidth={true}
+                    errorText={this.state.duplicatePasswordError ? 
+                        "Passwords doesn't match!" : null}
+                /><br/>
+                <TextField
+                    hintText="your@mail.com"
                     value={this.state.email}
                     onChange={e=>this.handleEmail(e)}
+                    fullWidth={true}
+                    errorText={this.state.alreadyExists == 'email' ?
+                        'There is already user with that email': null}
                 /><br/>
-                <button onClick={e=>this.handleSubmit()}>Signup</button><br/>
+                <RaisedButton 
+                    label='sign up'
+                    onClick={e=>this.handleSubmit()}
+                />
                 {this.state.statusMessage}
-            </div>
+            </Paper>
         );
     }
 }

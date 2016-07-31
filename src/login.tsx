@@ -2,6 +2,10 @@
 
 "use strict";
 import * as React from 'react';
+import TextField from 'material-ui/TextField'
+import Subheader from 'material-ui/Subheader'
+import Paper from 'material-ui/Paper'
+import RaisedButton from 'material-ui/RaisedButton'
 
 var endpoint = "http://" + config.backend.ip + ":" + config.backend.port + "/";
 
@@ -31,34 +35,42 @@ function base64encode(str) {
 }
 
 export interface ILoginProps {
-    onLogin(accessToken: string):void;
+    onLogin():void;
 }
 
 export interface ILoginState {
     username?: string,
-    password?: string
+    password?: string,
+    invalidPasswordMessage?: boolean
 }
 
-export class Login extends React.Component<ILoginProps, ILoginState> {
+export default class Login extends React.Component<ILoginProps, ILoginState> {
     constructor(props: ILoginProps) {
         super(props);
-        this.state = { username:"", password: "" };
+        this.state = { username:"", password: "", invalidPasswordMessage: false };
     }
     handleName(e){
-        this.setState({ username: e.target.value });
+        this.setState({ username: e.target.value, invalidPasswordMessage: false });
     }
     handlePassword(e){
-        this.setState({ password: e.target.value });
+        this.setState({ password: e.target.value, invalidPasswordMessage: false });
+    }
+    checkStatus(response) {
+        console.log(response);
+        if (response.status >= 200 && response.status < 300 && response.ok) {
+            return response;
+        } else {
+            if(response.status == 401) {
+                this.setState({ invalidPasswordMessage: true });
+            } else {
+                throw new Error(response.statusText);
+            }
+            return response;
+        }
     }
     authorize() {
-        var checkStatus = function(response) {
-            console.log(response);
-            if (response.status >= 200 && response.status < 300 && response.ok) {
-                return response;
-            } else {
-                return response;
-                //throw new Error(response.statusText);
-            }
+        if(!this.state.password || !this.state.username || this.state.invalidPasswordMessage) {
+            return;
         }
         var parseJSON = function(response) {
             return response.json()
@@ -73,24 +85,56 @@ export class Login extends React.Component<ILoginProps, ILoginState> {
             },
             body: bodyString
         })
-            .then(checkStatus)
+            .then(resp => this.checkStatus(resp))
             .then(parseJSON)
             .then(data => {
                 console.log(data);
-                this.props.onLogin(data.access_token);
+                localStorage.setItem("token", data.access_token);
+                this.props.onLogin();
             })
             .catch(ex => {
                 console.log('request failed: ', ex);
             });
     }
+
+    handleKeyDown(e) {
+        if(e.keyCode == 13) {
+            this.authorize();
+        }
+    }
+
     render() {
         return (
-            <div style = {{border: "solid"}}>
-                <h3>Вход в систему</h3>
-                username:<input onChange={e => this.handleName(e)}/>
-                password:<input onChange={e => this.handlePassword(e)}/>
-                <button onClick={e=>this.authorize()}>login</button>
-            </div>
+            <Paper
+                zDepth={2}
+                style={{
+                    display: 'block',
+                    padding: '10px'
+                }}
+            >
+                <TextField 
+                    onChange={e => this.handleName(e)}
+                    value={this.state.username}
+                    hintText="username"
+                    fullWidth={true}
+                    onKeyDown={(e)=>this.handleKeyDown(e)}
+                />
+                <TextField 
+                    onChange={e => this.handlePassword(e)}
+                    value={this.state.password}
+                    hintText="password"
+                    type="password"
+                    fullWidth={true}
+                    onKeyDown={(e)=>this.handleKeyDown(e)}
+                    errorText={this.state.invalidPasswordMessage ? 
+                        "Invalid login or password":
+                        null}
+                /><br/>
+                <RaisedButton 
+                    label='login'
+                    onClick={e=>this.authorize()}
+                />
+            </Paper>
         );
     }
 }
