@@ -55,9 +55,6 @@ export class StrategyRow extends React.Component<IStrategyRowProps, IStrategyRow
                 <TableRowColumn>
                     {this.formatDate(this.props.strategy.date)}
                 </TableRowColumn>
-                <TableRowColumn>
-                    <UserMini userId={this.props.strategy.userId}/>
-                </TableRowColumn>
                 <TableRowColumn>{this.props.strategy.status === "error" ?
                     <div>
                         <ErrorOutline

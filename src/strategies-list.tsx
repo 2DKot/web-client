@@ -14,7 +14,6 @@ import {StrategyRow} from './strategy-row'
 var endpoint = "http://" + config.backend.ip + ":" + config.backend.port + "/";
 
 interface IStrategiesListProps {
-    token: string;
 }
 
 interface IStrategiesListState {
@@ -36,7 +35,7 @@ export class StrategiesList extends React.Component<IStrategiesListProps, IStrat
             method: 'get',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + this.props.token
+                'Authorization': 'Bearer ' + localStorage.getItem('token')
             },
         })
             .then(response => response.json())
@@ -71,7 +70,6 @@ export class StrategiesList extends React.Component<IStrategiesListProps, IStrat
                     >
                         <TableRow>
                             <TableHeaderColumn>Date</TableHeaderColumn>
-                            <TableHeaderColumn>User</TableHeaderColumn>
                             <TableHeaderColumn>Status</TableHeaderColumn>
                             <TableHeaderColumn>Source</TableHeaderColumn>
                         </TableRow>
