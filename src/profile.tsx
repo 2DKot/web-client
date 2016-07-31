@@ -6,7 +6,7 @@ import {IUser} from './IUser';
 import TextField from 'material-ui/TextField'
 import RaisedButton from 'material-ui/RaisedButton'
 import Snackbar from 'material-ui/Snackbar'
-import Loader from './loader'
+import RefreshIndicator from 'material-ui/RefreshIndicator'
 var endpoint = "http://" + config.backend.ip + ":" + config.backend.port + "/";
 
 function base64encode(str) {
@@ -54,7 +54,8 @@ export default class Profile extends React.Component<IProfileProps, IProfileStat
             fullname: this.props.me.fullname, 
             editName: this.props.me.fullname ? false : true,
             updateError: false,
-            ajaxLoading: false
+            ajaxLoading: false,
+            successMessage: false
         }
     }
 
@@ -114,7 +115,14 @@ export default class Profile extends React.Component<IProfileProps, IProfileStat
                     fullWidth={true}
                     onBlur={e=>this.changeFullname(e)}
                 />
-                <Loader show={this.state.ajaxLoading}/>
+                <RefreshIndicator 
+                    status={this.state.ajaxLoading ? 'loading' : 'hide'}
+                    style={{
+                        position: 'relative'
+                    }}
+                    left={0}
+                    top={0}
+                />
                 {this.state.updateError ?
                     <div>
                         <label
