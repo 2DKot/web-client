@@ -40,29 +40,37 @@ export interface ILoginProps {
 
 export interface ILoginState {
     username?: string,
-    password?: string
+    password?: string,
+    invalidPasswordMessage?: boolean
 }
 
 export default class Login extends React.Component<ILoginProps, ILoginState> {
     constructor(props: ILoginProps) {
         super(props);
-        this.state = { username:"", password: "" };
+        this.state = { username:"", password: "", invalidPasswordMessage: false };
     }
     handleName(e){
-        this.setState({ username: e.target.value });
+        this.setState({ username: e.target.value, invalidPasswordMessage: false });
     }
     handlePassword(e){
-        this.setState({ password: e.target.value });
+        this.setState({ password: e.target.value, invalidPasswordMessage: false });
+    }
+    checkStatus(response) {
+        console.log(response);
+        if (response.status >= 200 && response.status < 300 && response.ok) {
+            return response;
+        } else {
+            if(response.status == 401) {
+                this.setState({ invalidPasswordMessage: true });
+            } else {
+                throw new Error(response.statusText);
+            }
+            return response;
+        }
     }
     authorize() {
-        var checkStatus = function(response) {
-            console.log(response);
-            if (response.status >= 200 && response.status < 300 && response.ok) {
-                return response;
-            } else {
-                return response;
-                //throw new Error(response.statusText);
-            }
+        if(!this.state.password || !this.state.username || this.state.invalidPasswordMessage) {
+            return;
         }
         var parseJSON = function(response) {
             return response.json()
@@ -77,7 +85,7 @@ export default class Login extends React.Component<ILoginProps, ILoginState> {
             },
             body: bodyString
         })
-            .then(checkStatus)
+            .then(resp => this.checkStatus(resp))
             .then(parseJSON)
             .then(data => {
                 console.log(data);
@@ -109,7 +117,7 @@ export default class Login extends React.Component<ILoginProps, ILoginState> {
                     value={this.state.username}
                     hintText="username"
                     fullWidth={true}
-                    onKeyDown={(e)=>{this.handleKeyDown(e)}}
+                    onKeyDown={(e)=>this.handleKeyDown(e)}
                 />
                 <TextField 
                     onChange={e => this.handlePassword(e)}
@@ -117,7 +125,10 @@ export default class Login extends React.Component<ILoginProps, ILoginState> {
                     hintText="password"
                     type="password"
                     fullWidth={true}
-                    onKeyDown={(e)=>{this.handleKeyDown(e)}}
+                    onKeyDown={(e)=>this.handleKeyDown(e)}
+                    errorText={this.state.invalidPasswordMessage ? 
+                        "Invalid login or password":
+                        null}
                 /><br/>
                 <RaisedButton 
                     label='login'
