@@ -38,6 +38,7 @@ interface IAppProps {
 interface IAppState {
     accessToken?: string
     me?: IUser
+    authTab?: string
 }
 
 class App extends React.Component<IAppProps, IAppState> {
@@ -75,7 +76,7 @@ class App extends React.Component<IAppProps, IAppState> {
         }
     }
     
-    handleLogin(){
+    handleLogin = () => {
         var token = localStorage.getItem('token');
         fetch(endpoint + 'me/', {
             method: 'post',
@@ -101,6 +102,17 @@ class App extends React.Component<IAppProps, IAppState> {
         });
     }
     
+    handleSignup = () => {
+        this.setState({ authTab: 'login' })
+    }
+
+    handleTabsChange = (value) => {
+        if (typeof(value) != 'string' ) {
+            return;
+        }
+        this.setState({ authTab: value })
+    }
+
     logout(){
         this.setState({me: null });
         localStorage.removeItem("token");
@@ -180,16 +192,20 @@ class App extends React.Component<IAppProps, IAppState> {
                                 width: '50%',
                                 margin: '0 auto'
                             }}
+                            value={this.state.authTab}
+                            onChange={this.handleTabsChange}
                         >
                             <Tab
                                 label='log in'
+                                value='login'
                             >
-                                <Login onLogin={() => this.handleLogin()}/>
+                                <Login onLogin={this.handleLogin}/>
                             </Tab>
                             <Tab
                                 label='sign up'
+                                value='signup'
                             >
-                                <Signup/>
+                                <Signup onSignup={ this.handleSignup }/>
                             </Tab>
                         </Tabs>
                     }
@@ -199,19 +215,10 @@ class App extends React.Component<IAppProps, IAppState> {
     }
 }
 
-function requireAuth(nextState, replace) {
-  if (true) {
-    replace({
-      pathname: '/signup',
-      state: { nextPathname: nextState.location.pathname }
-    })
-  }
-}
 
 ReactDom.render((
   <Router history={browserHistory}>
     <Route path="/" component={App}>
-      <Route path="signup" component={Signup}/>
       <Route path="profile" component={Profile}/>
       <Route path="strategies/new" component={SendStrategy}/>
       <Route path="strategies" component={StrategiesList}/>

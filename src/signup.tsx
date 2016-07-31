@@ -10,7 +10,7 @@ import RaisedButton from 'material-ui/RaisedButton'
 var endpoint = "http://" + config.backend.ip + ":" + config.backend.port + "/";
 
 export interface ISignupProps {
-    
+    onSignup()
 }
 
 export interface ISignupState {
@@ -19,8 +19,9 @@ export interface ISignupState {
     password?: string,
     passwordDuplicate?: string,
     email?: string,
-    duplicatePasswordMessage?: string,
-    statusMessage?: string
+    duplicatePasswordError?: boolean,
+    statusMessage?: string,
+    alreadyExists?: string
 }
 
 export default class Signup extends React.Component<ISignupProps, ISignupState> {
@@ -42,10 +43,10 @@ export default class Signup extends React.Component<ISignupProps, ISignupState> 
     }
     matchPasswords() {
         if(this.state.password !== this.state.passwordDuplicate) {
-            this.setState({duplicatePasswordMessage: "Passwords doesn't match!"});
+            this.setState({duplicatePasswordError: true});
         }
         else {
-            this.setState({duplicatePasswordMessage: "OK!"});
+            this.setState({duplicatePasswordError: false});
         }
     }
     handleEmail(e) {
@@ -63,14 +64,21 @@ export default class Signup extends React.Component<ISignupProps, ISignupState> 
             body: JSON.stringify({
                 username: this.state.username,
                 password: this.state.password,
-                email: this.state.email
+                email: this.state.email,
+                fullname: this.state.fullname
             })
         })
-            .then(response => response.json())
-            .then(data => {
-                console.log(data);
-                this.setState({ statusMessage: data.message });
-            });
+        .then(response => {
+            if(response.status === 201) {
+                this.props.onSignup();
+            } else if(response.status === 409) {
+                response.json().then((data) => {
+                    console.log('!!!!')
+                    console.log(data)
+                    this.setState({ alreadyExists: data.alreadyExists })
+                });
+            }
+        })
     }
     render() {
         return (
@@ -86,6 +94,8 @@ export default class Signup extends React.Component<ISignupProps, ISignupState> 
                     value={this.state.username}
                     onChange={e=>this.handleName(e)}
                     fullWidth={true}
+                    errorText={this.state.alreadyExists == 'username' ?
+                        'There is already user with that login':null}
                 /><br/>
                 <TextField
                     hintText = "full name"
@@ -106,12 +116,16 @@ export default class Signup extends React.Component<ISignupProps, ISignupState> 
                     value={this.state.passwordDuplicate}
                     onChange={e=>this.handlePasswordDuplicate(e)}
                     fullWidth={true}
-                /> {this.state.duplicatePasswordMessage}<br/>
+                    errorText={this.state.duplicatePasswordError ? 
+                        "Passwords doesn't match!" : null}
+                /><br/>
                 <TextField
                     hintText="your@mail.com"
                     value={this.state.email}
                     onChange={e=>this.handleEmail(e)}
                     fullWidth={true}
+                    errorText={this.state.alreadyExists == 'email' ?
+                        'There is already user with that email': null}
                 /><br/>
                 <RaisedButton 
                     label='sign up'
