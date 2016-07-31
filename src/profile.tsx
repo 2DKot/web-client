@@ -4,6 +4,8 @@
 import * as React from 'react';
 import {IUser} from './IUser';
 import TextField from 'material-ui/TextField'
+import RaisedButton from 'material-ui/RaisedButton'
+import Loader from './loader'
 var endpoint = "http://" + config.backend.ip + ":" + config.backend.port + "/";
 
 function base64encode(str) {
@@ -39,6 +41,8 @@ export interface IProfileProps {
 export interface IProfileState {
     editName?: boolean
     fullname?: string
+    updateError?: boolean
+    ajaxLoading?: boolean
 }
 
 export default class Profile extends React.Component<IProfileProps, IProfileState> {
@@ -46,7 +50,9 @@ export default class Profile extends React.Component<IProfileProps, IProfileStat
         super(props);
         this.state = {
             fullname: this.props.me.fullname, 
-            editName: this.props.me.fullname ? false : true
+            editName: this.props.me.fullname ? false : true,
+            updateError: false,
+            ajaxLoading: false
         }
     }
 
@@ -55,6 +61,7 @@ export default class Profile extends React.Component<IProfileProps, IProfileStat
     }
 
     changeFullname(e) {
+        this.setState({ ajaxLoading: true })
         var token = localStorage.getItem('token');
         fetch(endpoint + "users/" + this.props.me._id, {
             method: 'put',
@@ -72,7 +79,15 @@ export default class Profile extends React.Component<IProfileProps, IProfileStat
         .then(data => {
             console.log(data.message);
             this.props.updateUser(data.user);
+        }).catch(err => {
+            this.setState({ updateError: true })
         });
+        this.setState({ ajaxLoading: false });
+    }
+
+    handleTryUpdateAgain() {
+        this.setState({ updateError: false })
+        this.changeFullname(null);
     }
 
     render() {
@@ -90,6 +105,20 @@ export default class Profile extends React.Component<IProfileProps, IProfileStat
                     fullWidth={true}
                     onBlur={e=>this.changeFullname(e)}
                 />
+                <Loader show={this.state.ajaxLoading}/>
+                {this.state.updateError ?
+                    <div>
+                        <label
+                            style={{ color: 'red' }}
+                        >
+                            Failed to update profile!
+                        </label><br/>
+                        <RaisedButton
+                            label="Try update profile again"
+                            primary={true}
+                            onTouchTap={e=>this.handleTryUpdateAgain()}
+                        />
+                    </div>: null}
             </div>
         );
     }
