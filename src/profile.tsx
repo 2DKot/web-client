@@ -5,6 +5,7 @@ import * as React from 'react';
 import {IUser} from './IUser';
 import TextField from 'material-ui/TextField'
 import RaisedButton from 'material-ui/RaisedButton'
+import Snackbar from 'material-ui/Snackbar'
 import Loader from './loader'
 var endpoint = "http://" + config.backend.ip + ":" + config.backend.port + "/";
 
@@ -43,6 +44,7 @@ export interface IProfileState {
     fullname?: string
     updateError?: boolean
     ajaxLoading?: boolean
+    successMessage?: boolean
 }
 
 export default class Profile extends React.Component<IProfileProps, IProfileState> {
@@ -74,11 +76,14 @@ export default class Profile extends React.Component<IProfileProps, IProfileStat
             })
         })
         .then(response => {
-            return response.json();
+            if(response.ok) {
+                return response.json();
+            }
         })
         .then(data => {
             console.log(data.message);
             this.props.updateUser(data.user);
+            this.setState({ successMessage: true })
         }).catch(err => {
             this.setState({ updateError: true })
         });
@@ -88,6 +93,10 @@ export default class Profile extends React.Component<IProfileProps, IProfileStat
     handleTryUpdateAgain() {
         this.setState({ updateError: false })
         this.changeFullname(null);
+    }
+
+    closeSuccessMessage = () => {
+        this.setState({ successMessage: false })
     }
 
     render() {
@@ -119,6 +128,12 @@ export default class Profile extends React.Component<IProfileProps, IProfileStat
                             onTouchTap={e=>this.handleTryUpdateAgain()}
                         />
                     </div>: null}
+                <Snackbar
+                    message='Profile successfuly updated'
+                    open={this.state.successMessage}
+                    onRequestClose={this.closeSuccessMessage}
+                    autoHideDuration={2000}
+                />
             </div>
         );
     }
