@@ -1,5 +1,4 @@
 var endpoint = "http://" + config.backend.ip + ":" + config.backend.port + "/";
-var token = localStorage.getItem('token');
 
 interface RequestOptions {
     method: String,
@@ -7,6 +6,7 @@ interface RequestOptions {
 }
 
 export default function request(url: string, method: string, data: Object) {
+    var token = localStorage.getItem('token');
     var options: RequestInit = {
         method: method,
         headers: {
