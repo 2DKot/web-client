@@ -6,6 +6,7 @@ import TextField from 'material-ui/TextField'
 import Subheader from 'material-ui/Subheader'
 import Paper from 'material-ui/Paper'
 import RaisedButton from 'material-ui/RaisedButton'
+import request from './fetch-wrapper'
 
 var endpoint = "http://" + config.backend.ip + ":" + config.backend.port + "/";
 
@@ -53,32 +54,20 @@ export default class Signup extends React.Component<ISignupProps, ISignupState> 
         this.setState({ email: e.target.value });
     }
     handleSubmit(){
-        if(this.state.password != this.state.passwordDuplicate) {
-            return;
-        }
-        fetch(endpoint + "users", {
-            method: 'post',
-            headers: {
-              'Content-Type': 'application/json' 
-            },
-            body: JSON.stringify({
-                username: this.state.username,
-                password: this.state.password,
-                email: this.state.email,
-                fullname: this.state.fullname
-            })
-        })
-        .then(response => {
-            if(response.status === 201) {
+        request('users', 'post', {
+            username: this.state.username,
+            password: this.state.password,
+            email: this.state.email,
+            fullname: this.state.fullname
+        }).then(data => {
+            if(data.status === 201) {
                 this.props.onSignup();
-            } else if(response.status === 409) {
-                response.json().then((data) => {
-                    console.log('!!!!')
-                    console.log(data)
-                    this.setState({ alreadyExists: data.alreadyExists })
-                });
+            } else if(data.status === 409) {
+                this.setState({ alreadyExists: data.alreadyExists })
             }
-        })
+        }).catch(err => {
+            alert('Something went wrong!')
+        });
     }
     render() {
         return (
@@ -127,10 +116,16 @@ export default class Signup extends React.Component<ISignupProps, ISignupState> 
                     errorText={this.state.alreadyExists == 'email' ?
                         'There is already user with that email': null}
                 /><br/>
-                <RaisedButton 
-                    label='sign up'
-                    onClick={e=>this.handleSubmit()}
-                />
+                { this.state.username && this.state.fullname && 
+                        this.state.password && 
+                        !this.state.duplicatePasswordError && this.state.email ? 
+                    <RaisedButton 
+                        label='sign up'
+                        onClick={e=>this.handleSubmit()}
+                    /> :
+                    null
+                }
+                
                 {this.state.statusMessage}
             </Paper>
         );

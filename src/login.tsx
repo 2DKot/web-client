@@ -84,17 +84,14 @@ export default class Login extends React.Component<ILoginProps, ILoginState> {
                 'Authorization': authString
             },
             body: bodyString
+        }).then(resp => this.checkStatus(resp)).then(parseJSON).then(data => {
+            console.log(data);
+            localStorage.setItem("token", data.access_token);
+            this.props.onLogin();
         })
-            .then(resp => this.checkStatus(resp))
-            .then(parseJSON)
-            .then(data => {
-                console.log(data);
-                localStorage.setItem("token", data.access_token);
-                this.props.onLogin();
-            })
-            .catch(ex => {
-                console.log('request failed: ', ex);
-            });
+        .catch(ex => {
+            console.log('request failed: ', ex);
+        });
     }
 
     handleKeyDown(e) {

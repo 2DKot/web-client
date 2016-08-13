@@ -10,6 +10,7 @@ import Popover from 'material-ui/Popover'
 import RaisedButton from 'material-ui/RaisedButton'
 import Dialog from 'material-ui/Dialog'
 import {StrategyRow} from './strategy-row'
+import request from './fetch-wrapper'
 
 var endpoint = "http://" + config.backend.ip + ":" + config.backend.port + "/";
 
@@ -31,18 +32,10 @@ export class StrategiesList extends React.Component<IStrategiesListProps, IStrat
     }
     
     refresh() {
-        fetch(endpoint + "strategies", {
-            method: 'get',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + localStorage.getItem('token')
-            },
-        })
-            .then(response => response.json())
-            .then(data => {
-                console.log(data.message);
-                this.setState({ strategies: data.strategies });
-            });
+        request('strategies', 'get', null).then(data => {
+            console.log(data.message);
+            this.setState({ strategies: data.strategies });
+        });
     }
     
     // POST doesn't save type of date and JS think, that it's string!

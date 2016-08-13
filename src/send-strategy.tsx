@@ -4,8 +4,8 @@
 import * as React from 'react';
 import TextField from 'material-ui/TextField'
 import RaisedButton from 'material-ui/RaisedButton'
-
-var endpoint = "http://" + config.backend.ip + ":" + config.backend.port + "/";
+import request from './fetch-wrapper'
+import Snackbar from 'material-ui/Snackbar'
 
 export interface ISendStrategyProps {
 }
@@ -14,6 +14,7 @@ export interface ISendStrategyState {
     strategyCode?: string;
     statusMessage?: string;
     token?: string;
+    successMessage?: boolean;
 }
 
 export class SendStrategy extends React.Component<ISendStrategyProps, ISendStrategyState> {
@@ -42,32 +43,18 @@ export class SendStrategy extends React.Component<ISendStrategyProps, ISendStrat
     }
     
     handleSubmit() {
-        function codeToMessage(code: number) {
-            switch (code) {
-                case 200: return "Sended.";
-                case 400: return "Bad request.";
-                case 500: return "Internal server error.";
-                default: return "Unexpected server error.";
-            }
-        }
-        fetch(endpoint + "strategies", {
-            method: 'post',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + this.state.token
-            },
-            body: JSON.stringify({
-                source: this.state.strategyCode,
-            })
-        })
-            .then(response => {
-                this.setState({ statusMessage: codeToMessage(response.status) });
-                return response.json()
-            })
-            .then(data => {
-                console.log(data.message);
-            });
+        request('strategies', 'post', {
+            source: this.state.strategyCode
+        }).then(data => {
+            console.log(data.message);
+            this.setState({successMessage: true})
+        });
     }
+
+    closeSuccessMessage = () => {
+        this.setState({ successMessage: false })
+    }
+
     render() {
         return (
             <div>
@@ -87,7 +74,12 @@ export class SendStrategy extends React.Component<ISendStrategyProps, ISendStrat
                     label='Send'
                     onClick={e=> this.handleSubmit() }
                 /><br/>
-                {this.state.statusMessage}
+                <Snackbar
+                    message='Strategy sended to compilation.'
+                    open={this.state.successMessage}
+                    onRequestClose={this.closeSuccessMessage}
+                    autoHideDuration={2000}
+                />
             </div>
         );
     }

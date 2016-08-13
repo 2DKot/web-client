@@ -7,32 +7,7 @@ import TextField from 'material-ui/TextField'
 import RaisedButton from 'material-ui/RaisedButton'
 import Snackbar from 'material-ui/Snackbar'
 import RefreshIndicator from 'material-ui/RefreshIndicator'
-var endpoint = "http://" + config.backend.ip + ":" + config.backend.port + "/";
-
-function base64encode(str) {
-    //from http://www.manhunter.ru/webmaster/423_funkcii_base64_na_javascript.html
-    var b64chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefg'+
-                   'hijklmnopqrstuvwxyz0123456789+/=';
-    var b64encoded = '';
-    var chr1, chr2, chr3;
-    var enc1, enc2, enc3, enc4;
- 
-    for (var i=0; i<str.length;) {
-        chr1 = str.charCodeAt(i++);
-        chr2 = str.charCodeAt(i++);
-        chr3 = str.charCodeAt(i++);
- 
-        enc1 = chr1 >> 2;
-        enc2 = ((chr1 & 3) << 4) | (chr2 >> 4);
- 
-        enc3 = isNaN(chr2) ? 64:(((chr2 & 15) << 2) | (chr3 >> 6));
-        enc4 = isNaN(chr3) ? 64:(chr3 & 63);
- 
-        b64encoded += b64chars.charAt(enc1) + b64chars.charAt(enc2) +
-                      b64chars.charAt(enc3) + b64chars.charAt(enc4);
-    }
-    return b64encoded;
-}
+import request from './fetch-wrapper'
 
 export interface IProfileProps {
     me: IUser
@@ -66,22 +41,9 @@ export default class Profile extends React.Component<IProfileProps, IProfileStat
     changeFullname(e) {
         this.setState({ ajaxLoading: true })
         var token = localStorage.getItem('token');
-        fetch(endpoint + "users/" + this.props.me._id, {
-            method: 'put',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + token
-            },
-            body: JSON.stringify({
-                fullname: this.state.fullname
-            })
-        })
-        .then(response => {
-            if(response.ok) {
-                return response.json();
-            }
-        })
-        .then(data => {
+        request('users/' + this.props.me._id, 'put', {
+            fullname: this.state.fullname
+        }).then(data => {
             console.log(data.message);
             this.props.updateUser(data.user);
             this.setState({ successMessage: true })
