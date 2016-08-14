@@ -2,6 +2,7 @@
 
 "use strict";
 import * as React from 'react';
+import * as ReactDom from 'react-dom'
 import TextField from 'material-ui/TextField'
 import RaisedButton from 'material-ui/RaisedButton'
 import request from './fetch-wrapper'
@@ -12,15 +13,18 @@ export interface ISendStrategyProps {
 
 export interface ISendStrategyState {
     strategyCode?: string;
-    statusMessage?: string;
-    token?: string;
     successMessage?: boolean;
+    sendingError?: boolean;
 }
 
 export class SendStrategy extends React.Component<ISendStrategyProps, ISendStrategyState> {
     constructor(props: ISendStrategyProps) {
         super(props);
-        this.state = {token: localStorage.getItem('token')};
+        this.state = {
+            strategyCode: '',
+            successMessage: false,
+            sendingError: false
+        };
     }
 
     handleStrategyCode(e) {
@@ -29,10 +33,6 @@ export class SendStrategy extends React.Component<ISendStrategyProps, ISendStrat
     
     handleFile(e) {
         var file: File = e.target.files[0];
-        if(file.size > 100000) {
-            this.setState({statusMessage: "File too big!"});
-            return;
-        }
         console.log(file.type)
         var reader = new FileReader();
         reader.onloadend = (e) => {
@@ -47,12 +47,18 @@ export class SendStrategy extends React.Component<ISendStrategyProps, ISendStrat
             source: this.state.strategyCode
         }).then(data => {
             console.log(data.message);
-            this.setState({successMessage: true})
+            this.setState({successMessage: true, strategyCode: ''})
+        }).catch(err => {
+            this.setState({sendingError: true})
         });
     }
 
     closeSuccessMessage = () => {
         this.setState({ successMessage: false })
+    }
+
+    closeErrorMessage = () => {
+        this.setState({ sendingError: false })
     }
 
     render() {
@@ -67,9 +73,20 @@ export class SendStrategy extends React.Component<ISendStrategyProps, ISendStrat
                     rowsMax={20}
                 /><br/>
                 <input
+                    id='fileUpload'
+                    ref='fileUpload'
                     type = "file"               
                     onChange={e=> this.handleFile(e) }
-                /><br/>
+                    style={{display: 'none'}}
+                />
+                <RaisedButton>
+                    <label
+                        htmlFor='fileUpload'
+                    >
+                        Choose file
+                    </label>
+                </RaisedButton>
+                <br/>
                 <RaisedButton
                     label='Send'
                     onClick={e=> this.handleSubmit() }
@@ -79,6 +96,13 @@ export class SendStrategy extends React.Component<ISendStrategyProps, ISendStrat
                     open={this.state.successMessage}
                     onRequestClose={this.closeSuccessMessage}
                     autoHideDuration={2000}
+                />
+                <Snackbar
+                    message='Error of strategy sending. Try later.'
+                    open={this.state.sendingError}
+                    onRequestClose={this.closeErrorMessage}
+                    onActionTouchTap={this.closeErrorMessage}
+                    action='Close'
                 />
             </div>
         );
