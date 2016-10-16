@@ -17,3 +17,5 @@ var devServer = new WebpackDevServer(
 		publicPath: '/'
 	}
 ).listen(config.port, 'localhost');
+
+console.log("Go to /webpack-dev-server/")

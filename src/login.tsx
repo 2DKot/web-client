@@ -75,13 +75,11 @@ export default class Login extends React.Component<ILoginProps, ILoginState> {
         var parseJSON = function(response) {
             return response.json()
         }
-        var authString = 'Basic ' + base64encode('superID:superSecret');
-        var bodyString = 'grant_type=password&username='+this.state.username+'&password='+this.state.password;
-        fetch(endpoint + 'oauth/token/', {
+        var bodyString = 'grant_type=password&username=' + this.state.username + '&password=' + this.state.password + '&scope=write&client_id=trusted'
+        fetch(endpoint + 'oauth/token', {
             method: 'post',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
-                'Authorization': authString
             },
             body: bodyString
         }).then(resp => this.checkStatus(resp)).then(parseJSON).then(data => {
